@@ -2,8 +2,9 @@
 
 # xiyufa
 
+>
+
+* *Read ten thousand books, travel ten thousand miles*
 
 [GitHub](https://github.com/xiyufa/web-dosc)
-[Get Started](#quick-start)
-
-<!-- ![color](#f0f0f0) -->
+[开始阅读](index.md)
