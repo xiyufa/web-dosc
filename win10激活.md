@@ -8,7 +8,7 @@
 
 3.此时将“以管理员身份”打开“MSDOS”窗口，在此界面中，依次输出以下命令：
 
-slmgr.vbs /upk
+`slmgr.vbs /upk`
 
 复制以上命令，并在MSDOW窗口中右击以粘贴此命令，按回车进行确定。
 
@@ -16,19 +16,19 @@ slmgr.vbs /upk
 
 4.接着输入以下命令：
 
-slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX
+`slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX`
 
 弹出窗口提示：“成功的安装了产品密钥”。
 
 5.继续输入以下命令：
 
-slmgr /skms zh.us.to
+`slmgr /skms zh.us.to`
 
 弹出窗口提示：“密钥管理服务计算机名成功的设置为zh.us.to”。
 
 6.接下来输入以下命令：
 
-slmgr /ato
+`slmgr /ato`
 
 此时将弹出窗口提示：“成功的激活了产品”。
 

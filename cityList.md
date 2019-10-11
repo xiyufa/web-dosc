@@ -1,6 +1,7 @@
 # 中国的省市列表
+---
 
-```javaScript
+```js
   const province = [{
   code: 110000,
   name: '北京',
