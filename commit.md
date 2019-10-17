@@ -152,3 +152,5 @@ This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
 ```
 
 Body部分的格式是固定的，必须写成`This recerts commit &lt;hash>.`,其中的`hash`是被撤销commit的SHA标识符。
+
+[推荐阅读](http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html)
