@@ -10,7 +10,7 @@
 
 + [Commit message 编写指南](/commit)
 
-+ [格式化时间](/formatTime)
+<!-- + [格式化时间](/formatTime) -->
 
 + [win10激活](/win10激活)
 
