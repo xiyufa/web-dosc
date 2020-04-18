@@ -2,7 +2,7 @@
 
 + [JavaScript语法风格](/jsLint)  
 
-<!-- + [原生JavaScript知识](/js) -->
++ [原生JavaScript知识](/js)
 
 + [axios](/axios)
 
