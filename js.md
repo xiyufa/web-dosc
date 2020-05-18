@@ -1,3 +1,7 @@
+
+
+
+
 # 原生JavaScript知识
 
 ## js中的数据类型
@@ -79,6 +83,28 @@ console.log(toString.call({})) // [object Object]
 console.log(toString.call([])) // [object Array]
 console.log(toString.call(function () { })) // [object Function]
 ```
+- ​	参考jQuery封装，[点击查看type原码](https://github.com/jquery/jquery/blob/ac9e3016645078e1e42120822cfb2076151c8cbe/src/core.js#L269)
+
+```js
+/**
+ * 简单封装Object.prototype.toString
+ * @param {*} obj 
+ */
+const type = obj => {
+  const types = 'Boolean Number String Function Array Date RegExp Object Error Null'
+  let class2type = {}
+
+  // 生成class2type映射
+  types.split(' ').map(item => {
+    class2type[`[object ${item}]`] = item.toLowerCase()
+  })
+
+  return typeof obj === 'object' || typeof obj === 'function'
+    ? class2type[Object.prototype.toString.call(obj)] || 'object'
+    : typeof obj
+}
+```
+
 + 另外一种判断基本数据类型和复杂数据类型方法https://github.com/YvetteLau/Blog/blob/master/JS/data-type.js
 
 ## js中类型转换
