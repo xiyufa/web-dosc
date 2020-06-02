@@ -173,9 +173,9 @@ console.log(reg.march(str)) // ['goodbey']
 
 ![png](./assets\regexp.png ':size=100')
 
-#### 2,如何匹配位置呢？
+#### 2.如何匹配位置呢？
 
-在es5中，共有6个锚字符：
+在`es5`中，共有6个锚字符：
 
 > `^`，`$`，`\b`，`\B`，`(?=p)`，`(?!p)`
 
@@ -195,19 +195,184 @@ console.log(str) // '#hello#'
 > 注意：多行匹配模式是，二者是行的概念
 
 ```js
-let str = 'I\nlove\njavascript'.replace(/^|$/, '#')
-
+let res = 'I\nlove\njavascript'.replace(/^|$/gm, '#')
+console.log(res)
+/*
+#I#
+#love#
+#javascript#
+*/
 ```
 
+- 2.2 `\b`和`\B`
+
+`\b`是单词边界，具体就是`\w`和`\W`之间的位置，也包括`\w`和`$`之间的位置，也包括`\w`和`^`之间的位置。
+
+> 如：文件名`[JS] Lesson_01.mp4`中的`/b`
+
+``` js
+let res = '[JS] Lesson_01.mp4'.replace(/\b/g, '#')
+console.log(res) // '[#JS#] #Lesson_01#.#mp4'
+```
+
+`\B`是非单词边界，具体说来就是`\w`与`\w`、`\W`与`\W`、`^`与`\W`，`\W`与`$`之间的位置。
+
+> 如：文件名`[JS] Lesson_01.mp4`中的`/b`
+
+``` js
+let res = '[JS] Lesson_01.mp4'.replace(/\B/g, '#')
+console.log(res) // '#[J#S]# L#e#s#s#o#n#_#0#1.m#p#4'
+```
+
+- 2.3 `(?=p)`和`(?!p)`
+
+`(?=p)`，其中`p`是一个子模式，既`p`前面的位置。
+
+> 如：`(?=l)`，表示`l`全面的位置。
+
+```js
+let res = 'hello'.replace(/(?=l)/g, '#')
+console.log(res) // 'he#l#lo'
+```
+
+> 而`(?!p)`就是`(?=p)`的反面意思，如：
+
+```js
+let res = 'hello'.raplace(/(?!l)/g, '#')
+console.log(res) // '#h#ell#o#'
+```
+
+二者的学名分别是`positive lookahead`和`negative lookahead`。中文翻译分别是正向先行断言和负向先行断言。
+
+`ES6`中，还支持`positive lookbehind`和`negative lookbehind`。具体是`(?<=p)`和`(?<!p)`。
+
+也有书上把这四个东西，翻译成环视，即看看右边或看看左边。
+
+但一般书上，没有很好强调这四者是个位置。
+
+比如`(?=p)`，一般都理解成：要求接下来的字符与`p`匹配，但不能包括`p`的那些字符。
+
+而在本人看来`(?=p)`就与`^`一样好理解，就是`p`前面的那个位置。
+
+####	3.位置的特性
+
+对于位置的理解，我们可以理解成空字符`""`。
+
+如：`"hello"`等价于如下形式
+
+```js
+"hello" == "" + "h" + "" + "e" + "" + "l" + "" + "l" + "o" + ""
+```
+
+也等价于：
+
+```js
+"hello" == "" + "" + "hello"
+```
+
+因此，把`/^hello$/`写成`/^^hello$$$/`，是没有任何问题的：
+
+```js
+var result = /^^hello$$$/.test("hello")
+console.log(result) // true
+```
+
+甚至可以写成更复杂的:
+
+```js
+var result = /(?=he)^^he(?=\w)llo$\b\b$/.test("hello")
+console.log(result) // true
+```
+
+- 不匹配任何东西的正则
+
+  `/.^/`
+
+- 数值的千位分割符
+
+  比如把"12345678"，变成"12,345,678"。
+
+  - 弄出最后一个逗号
+
+    使用`(?=\d{3}$)`就可以做到：
+
+    ```js
+    let res = '12345678'.replace('/(?=\d{3}$)/g', ',')
+    console.log(res) // '12345,678'
+    ```
+
+  - 弄出所有逗号
+
+    使用`+`
+
+    ```js
+    let res = '12345678'.replace(/(?=(\d{3})+$)/g, ',')
+    console.log(res) // '12,345,678'
+    ```
+
+  - 写完正则后，要多验证几个案例，此时我们会发现问题：
+
+    ```js
+    var result = "123456789".replace(/(?=(\d{3})+$)/g, ',')
+    console.log(result); //",123,456,789"
+    ```
+
+    因为上面的正则，仅仅表示把从结尾向前数，一但是3的倍数，就把其前面的位置替换成逗号。因此才会出现这个问题。
+
+  - 匹配非开头，`(?!^)`
+
+    easy，`(?!^)`，你想到了吗？测试如下：
+
+    ```js
+    let string1 = "12345678"
+    let string2 = "123456789"
+    reg = /(?!^)(?=(\d{3})+$)/g
+    
+    var result = string1.replace(reg, ',')
+    console.log(result) // "12,345,678"
+    
+    result = string2.replace(reg, ',')
+    console.log(result) // "123,456,789"
+    
+    ```
+
+  > 其他做法，`(?!^)`可以换成`(?!\b)`也可以换成`(?\B)`
 
 
 
+##  3、正则表达式的括号
+
+不管哪门语言中都有括号。正则表达式也是一门语言，而括号的存在使这门语言更为强大。
+
+对括号的使用是否得心应手，是衡量对正则的掌握水平的一个侧面标准。
+
+括号的作用，其实三言两语就能说明白，括号提供了分组，便于我们引用它。
+
+引用某个分组，会有两种情形：在JavaScript里引用它，在正则表达式里引用它。
+
+内容包括：
+
+1. 分组和分支结构
+2. 捕获分组
+3. 反向引用
+4. 非捕获分组
 
 
 
+####   1.分组和分组结构
 
+- 1.1分组
 
+我们知道`/a+/`匹配连续出现的`a`，而要使用连续出现的`ab`，需要使用`/(ab)+/`。
 
+其中括号提供了分组的功能，使量词`+`作用于`ab`这个整体。
 
+```js
+let reg = /(ab)+/g
+let str = 'abab ab abababa'
+console.log(str.march(reg)) // ['abab', 'ab', 'ababab']
+```
 
+- 1.2分支结构
 
+而在多选分支结构`(p1|p2)`中，提供字表达是的所有可能。
