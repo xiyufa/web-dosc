@@ -368,11 +368,224 @@ console.log(result) // true
 其中括号提供了分组的功能，使量词`+`作用于`ab`这个整体。
 
 ```js
-let reg = /(ab)+/g
+const reg = /(ab)+/g
 let str = 'abab ab abababa'
 console.log(str.march(reg)) // ['abab', 'ab', 'ababab']
 ```
 
 - 1.2分支结构
 
-而在多选分支结构`(p1|p2)`中，提供字表达是的所有可能。
+而在多选分支结构`(p1|p2)`中，提供字表达是的所有可能。如：
+
+```js
+const reg = /^I love (JavaScript|Regular Expression)$/
+console.log(reg.test('I love JavaScript'))  // true
+console.log(reg.test('Regular Expression')) // true
+```
+
+> 如果去掉正则中的括号，即`/^I love JavaScript|Regular Expression$/`，匹配字符串是"I love JavaScript"和"Regular Expression"。
+
+####  2.分组引用
+
+如：日期格式为`yyyy-mm-dd`，写一个简单的正则
+
+```js
+const reg = /\d{4}-\d{2}-\d{2}/
+```
+
+括号版的:
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+```
+
+-  2.1提取数据
+
+如：提取年月日
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+const str = '2020-06-03'
+console.log(str.match(reg)) // ["2020-06-03", "2020", "06", "03", index: 0, input: "2020-06-03", groups: undefined]
+```
+
+> `match`返回的是一个数组，第一个元素是整体匹配结果，然后是各个分组（括号里）匹配的内容，然后是匹配下标，最后是输入的文本。正则是否有修饰符`g`，`match`返回的结果是不一样的。
+
+另外也可以使用正则对象的`exec`方法：
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+const str = '2020-06-03'
+console.log(reg.exec(str)) // ["2020-06-03", "2020", "06", "03", index: 0, input: "2020-06-03", groups: undefined]
+```
+
+同时，也可以使用构造函数的全局属性`$1`和`$9`来获取：
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+const str = '2020-06-03'
+
+reg.test(str) // 正则操作即可，例如
+//regex.exec(string)
+//string.match(regex)
+
+console.log(RegExp.$1) // "2020"
+console.log(RegExp.$2) // "06"
+console.log(RegExp.$3) // "03"
+```
+
+-  2.2替换
+
+如：把`yyyy-mm-dd`替换成`mm/dd/yyyy`
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+const str = '2020-06-03'
+
+const res = str.replace(reg, '$2/$3/$1')
+console.log(res) // "06/03/2020"
+```
+
+其中`replace`中的，第二个参数里用`$1`,`$2`,`$3`指带相应的分组，等价于：
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+const str = '2020-06-03'
+
+const res = str.replace(reg, () => {
+    return `${RegExp.$2}/${RegExp.$3}/${RegExp.$1}`
+})
+console.log(res) // "06/03/2020"
+```
+
+也等价于：
+
+```js
+const reg = /(\d{4})-(\d{2})-(\d{2})/
+const str = '2020-06-03'
+
+const res = str.replace(reg, (match, year, month, day) => {
+    return `${month}/${day}/${year}`
+})
+console.log(res) // "06/03/2020"
+```
+
+####  3.方向引用
+
+除了使用相应`API`来引用分组，也可以在正则本身里引用分组。但只能引用之前出现的分组，即反向引用。
+
+如：写一个正则表达式支持以下三种格式：
+
+>2020-06-03
+>
+>2020/06/03
+>
+>2020.06.03
+
+```js
+const reg = /\d{4}(-|\.|\/)\d{2}(-|\.|\/)\d{2}/
+const str1 = '2020-06-03'
+const str2 = '2020/06/03'
+const str3 = '2020.06.03'
+
+console.log(reg.test(str1)) // true
+console.log(reg.test(str2)) // true
+console.log(reg.test(str3)) // true
+```
+
+其中`/`和`.`需要转移，虽然匹配了要求的情况，但也匹配了`2020-06.03`这样的数据。
+
+```js
+const reg = /\d{4}(-|\.|\/)\d{2}\1\d{2}/
+const str1 = '2020-06-03'
+const str2 = '2020/06/03'
+const str3 = '2020.06.03'
+const str4 = '2020-06.03'
+
+console.log(reg.test(str1)) // true
+console.log(reg.test(str2)) // true
+console.log(reg.test(str3)) // true
+console.log(reg.test(str4)) // falsr
+```
+
+> 注意里面的`\1`，表示的引用之前的那个分组`(-|\.|\/)`。不管它匹配到什么（比如-），`\1`都匹配那个同样的具体某个字符。
+
+-  3.1括号嵌套
+
+以左括号（开括号）为准，如
+
+```js
+const reg = /^((\d)(\d(\d)))\1\2\3\4$/
+const str = "1231231233"
+console.log( regex.test(string) ) // true
+console.log( RegExp.$1 ) // 123
+console.log( RegExp.$2 ) // 1
+console.log( RegExp.$3 ) // 23
+console.log( RegExp.$4 ) // 3
+```
+
+- 3.2 `\10`表示什么呢？
+
+```js
+const res = /(1)(2)(3)(4)(5)(6)(7)(8)(9)(#) \10+/
+const str = '123456789# #####'
+console.log(reg.test(str)) // true
+```
+
+- 3.3引用不存在的分组
+
+方向引用是引用前面的分组，在引用不存在的分组时，不会报错。只是匹配方向引用的字符本身。例如，`\2`就是匹配"\2"，注意"\2"是对"2"转意。
+
+```js
+const regex = /\1\2\3\4\5\6\7\8\9/
+console.log(regex.test('\1\2\3\4\5\6\7\8\9')) // true
+console.log('\1\2\3\4\5\6\7\8\9'.split('')) // ['\x01', '\x02','\x03', '\x04','\x05', '\x06','\x07', '8','9']
+```
+
+####  4.非捕获分组
+
+之前文中出现的分组，都会捕获它们匹配到的数据，以便后续引用，因此也称他们是捕获型分组。
+
+如果只想要括号最原始的功能，此时可以使用非捕获分组`(?:p)`：
+
+```js
+const res = /(?:ab)/g
+const str = 'ababa abbb ababab'
+console.log(str.march(res)) // ['abab', 'ab', 'ababab']
+```
+
+####  5.相关案例
+
+- 5.1模拟字符串`trim`方法模拟
+
+方案一： 匹配开始和结束的空白符，替换成空字符
+
+```js
+const trim = str => {
+	return str.replace(/^\s+|\s+$/g, '')
+}
+
+console.log(trim('    aa    ')) // 'aa'
+```
+
+方案二：匹配整个字符串，然后用引用来提取相应的内容
+
+```js
+const trim = str => {
+    return str.replace(/^\s*(.*?)\s*$/g, $1)
+} 
+
+console.log(trim('    aa    ')) // 'aa'
+```
+
+- 将每个单词转转成首字母大写	
+
+```js
+const titleize = str => {
+    return str.toLowerCase().replace(/(^|\s)\w/g, str => {
+        return str.toUpperCase()
+    })
+}
+
+console.log(titleize('i love js')) // 'I Love Js'
+```
