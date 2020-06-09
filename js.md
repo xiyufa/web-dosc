@@ -524,3 +524,66 @@ const f1 = function func1() {
   const a = 10
 }
 ```
+
+##  js中flat——数组扁平化
+
+需求：多维数组 => 一维数组
+
+```js
+let arr = [1, [2, [3, [4, 5]]], 6]
+let str = JSON.stringify(arr)
+```
+
+**ES6中的`flat`方法**
+
+```js
+arr = arr.flat(Infinity)
+```
+
+**`replace` + `split`**
+
+```js
+arr = str.replace(/(\[|\])/g, '').split(',')
+```
+
+**`replace` + `JSON.parse`**
+
+```js
+str = `[${str.replace(/(\[|\])/g, '')}]`
+arr = JSON.parse(str)
+```
+
+**普通递归**
+
+```js
+let result = []
+let fn = arr => {
+    for(let i = 0; i < arr.length; i++) {
+       let item = arr[i]
+       if (Array.isArray(item)) {
+           fn(item)
+       } else {
+           result.push(item)
+       }
+    }
+}
+```
+
+**`reduce`迭代**
+
+```js
+const flatten = arr => {
+    return arr.reduce((acc, cur) => {
+        return acc.concat(Array.isArray(cur) ? flatten(cur) : cur)
+    }, [])
+}
+```
+
+**扩展运算符**
+
+```js
+while(arr.some(Array.isArray)) {
+    arr = [].concat(...arr)
+}
+```
+
